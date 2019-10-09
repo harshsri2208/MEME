@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,21 +25,19 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUEST = 1;
-    private static final int RESULT_LAOD_IMAGE = 2;
+    private static final int RESULT_LOAD_IMAGE = 2;
 
-    Button load, save, share, go;
-
+    Button load, save, share, go, clear;
     TextView textView1, textView2;
-
     EditText editText1, editText2;
-
     ImageView imageView;
-
     String currentImage = "";
+    boolean imageLoaded = false, textAdded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,32 +54,33 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
             }
-        } else {
-            //do nothing
         }
 
-        imageView = (ImageView)findViewById(R.id.imageView);
+        imageView = findViewById(R.id.imageView);
 
-        textView1 = (TextView) findViewById(R.id.textView1);
-        textView2 = (TextView)findViewById(R.id.textView2);
+        textView1 = findViewById(R.id.textView1);
+        textView2 = findViewById(R.id.textView2);
 
-        editText1 = (EditText) findViewById(R.id.editText1);
-        editText2 = (EditText) findViewById(R.id.editText2);
+        editText1 = findViewById(R.id.editText1);
+        editText2 = findViewById(R.id.editText2);
 
-        go = (Button) findViewById(R.id.go);
+        go = findViewById(R.id.go);
 
-        load = (Button) findViewById(R.id.load);
-        save = (Button) findViewById(R.id.save);
-        share = (Button) findViewById(R.id.share);
+        load = findViewById(R.id.load);
+        save = findViewById(R.id.save);
+        share = findViewById(R.id.share);
+        clear = findViewById(R.id.btnClear);
 
         save.setEnabled(false);
         share.setEnabled(false);
+        go.setEnabled(false);
+        go.setText("Upload an image first");
 
         load.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, RESULT_LAOD_IMAGE);
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
             }
         });
 
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shareImage(currentImage);
+                shareImage();
             }
         });
 
@@ -108,11 +108,32 @@ public class MainActivity extends AppCompatActivity {
                 textView1.setText(editText1.getText().toString());
                 textView2.setText(editText2.getText().toString());
 
-                editText1.setText("");
-                editText2.setText("");
+                //Forces user to enter at least one line of text
+                if (!editText1.getText().toString().equals("") || !editText2.getText().toString().equals("")) {
+                    textAdded = true;
+                } else {
+                    Toast.makeText(getApplicationContext(), "Enter some text first!",
+                            Toast.LENGTH_SHORT).show();
+                    textAdded = false;
+                    share.setEnabled(false);
+                    save.setEnabled(false);
+                }
+                if (imageLoaded && textAdded) {
+                    share.setEnabled(true);
+                    save.setEnabled(true);
+                }
             }
         });
 
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editText1.setText("");
+                editText2.setText("");
+                share.setEnabled(false);
+                save.setEnabled(false);
+            }
+        });
     }
 
     public static Bitmap getScreenShot(View view){
@@ -141,16 +162,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void shareImage(String fileName){
+    private void shareImage(){
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MEME";
-        Uri uri = Uri.fromFile(new File(dirPath, fileName));
+        String imageName = "meme" + System.currentTimeMillis() + ".png";
+        View content = findViewById(R.id.lay);
+        Bitmap bitmap = getScreenShot(content);
+        File imageFile = new File(dirPath, imageName);
+        OutputStream os;
+        try {
+            os = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.example.lenovo.meme.provider", imageFile);
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_SEND);
-        intent.setType("image/*");
-
-        intent.putExtra(Intent.EXTRA_SUBJECT, "");
-        intent.putExtra(Intent.EXTRA_TEXT, "");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.setType("image/*");
 
         try{
             startActivity(Intent.createChooser(intent, "Share Via"));
@@ -162,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == RESULT_LAOD_IMAGE && resultCode == RESULT_OK && null != data){
+        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data){
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -171,8 +203,15 @@ public class MainActivity extends AppCompatActivity {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
             imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-            save.setEnabled(true);
-            share.setEnabled(false);
+            //Ensures image can't be saved/shared until text has been added
+            imageLoaded = true;
+            go.setEnabled(true);
+            go.setText("TRY");
+            if (textAdded) {
+                share.setEnabled(true);
+                save.setEnabled(true);
+                share.setEnabled(true);
+            }
         }
     }
 
@@ -190,7 +229,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "No Permisssion Granted!", Toast.LENGTH_SHORT).show();
                     finish();
                 }
-                return;
             }
         }
     }
