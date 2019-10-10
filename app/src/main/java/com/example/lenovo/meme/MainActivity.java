@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -15,7 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_REQUEST = 1;
     private static final int RESULT_LOAD_IMAGE = 2;
 
-    Button load, save, share, go, clear;
-    TextView textView1, textView2;
-    EditText editText1, editText2;
-    ImageView imageView;
+    Button btnLoad, btnSave, btnShare, btnGo, btnClear;
+    TextView prevTextTop, preTextBottom;
+    EditText inputTextTop, inputTextBottom;
+    ImageView ivMemePreview;
     String currentImage = "";
     boolean imageLoaded = false, textAdded = false;
 
@@ -56,27 +57,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        imageView = findViewById(R.id.imageView);
+        ivMemePreview = findViewById(R.id.imageView);
 
-        textView1 = findViewById(R.id.textView1);
-        textView2 = findViewById(R.id.textView2);
+        prevTextTop = findViewById(R.id.textView1);
+        preTextBottom = findViewById(R.id.textView2);
 
-        editText1 = findViewById(R.id.editText1);
-        editText2 = findViewById(R.id.editText2);
+        inputTextTop = findViewById(R.id.editText1);
+        inputTextBottom = findViewById(R.id.editText2);
 
-        go = findViewById(R.id.go);
+        btnGo = findViewById(R.id.go);
 
-        load = findViewById(R.id.load);
-        save = findViewById(R.id.save);
-        share = findViewById(R.id.share);
-        clear = findViewById(R.id.btnClear);
+        btnLoad = findViewById(R.id.load);
+        btnSave = findViewById(R.id.save);
+        btnShare = findViewById(R.id.share);
+        btnClear = findViewById(R.id.btnClear);
 
-        save.setEnabled(false);
-        share.setEnabled(false);
-        go.setEnabled(false);
-        go.setText("Upload an image first");
+        btnSave.setEnabled(false);
+        btnShare.setEnabled(false);
+        btnGo.setEnabled(false);
+        btnGo.setText("Upload an image first");
 
-        load.setOnClickListener(new View.OnClickListener() {
+        btnLoad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -84,85 +85,88 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        save.setOnClickListener(new View.OnClickListener() {
+        btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 View content = findViewById(R.id.lay);
                 Bitmap bitmap = getScreenShot(content);
                 currentImage = "meme" + System.currentTimeMillis() + ".png";
                 store(bitmap, currentImage);
-                share.setEnabled(true);
+                btnShare.setEnabled(true);
+
             }
         });
 
-        share.setOnClickListener(new View.OnClickListener() {
+        btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 shareImage();
             }
         });
 
-        go.setOnClickListener(new View.OnClickListener() {
+        btnGo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textView1.setText(editText1.getText().toString());
-                textView2.setText(editText2.getText().toString());
+                prevTextTop.setText(inputTextTop.getText().toString());
+                preTextBottom.setText(inputTextBottom.getText().toString());
 
                 //Forces user to enter at least one line of text
-                if (!editText1.getText().toString().equals("") || !editText2.getText().toString().equals("")) {
+                if (!inputTextTop.getText().toString().equals("") || !inputTextBottom.getText().toString().equals("")) {
                     textAdded = true;
                 } else {
                     Toast.makeText(getApplicationContext(), "Enter some text first!",
                             Toast.LENGTH_SHORT).show();
                     textAdded = false;
-                    share.setEnabled(false);
-                    save.setEnabled(false);
+                    btnShare.setEnabled(false);
+                    btnSave.setEnabled(false);
                 }
                 if (imageLoaded && textAdded) {
-                    share.setEnabled(true);
-                    save.setEnabled(true);
+                    btnShare.setEnabled(true);
+                    btnSave.setEnabled(true);
                 }
             }
         });
 
-        clear.setOnClickListener(new View.OnClickListener() {
+        btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editText1.setText("");
-                editText2.setText("");
-                share.setEnabled(false);
-                save.setEnabled(false);
+                inputTextTop.setText("");
+                inputTextBottom.setText("");
+                btnShare.setEnabled(false);
+                btnSave.setEnabled(false);
             }
         });
     }
 
-    public static Bitmap getScreenShot(View view){
+    public static Bitmap getScreenShot(View view) {
         view.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
         view.setDrawingCacheEnabled(false);
         return bitmap;
     }
 
-    public void store(Bitmap bm, String fileName){
+    public void store(Bitmap bm, String fileName) {
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MEME";
         File dir = new File(dirPath);
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdir();
         }
         File file = new File(dirPath, fileName);
-        try{
+
+        Log.d("PATH", file.getAbsolutePath());
+        try {
             FileOutputStream fos = new FileOutputStream(file);
             bm.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.flush();
             fos.close();
             Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(this, "Error!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void shareImage(){
+    private void shareImage() {
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MEME";
         String imageName = "meme" + System.currentTimeMillis() + ".png";
         View content = findViewById(R.id.lay);
@@ -184,51 +188,51 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(Intent.EXTRA_STREAM, uri);
         intent.setType("image/*");
 
-        try{
+        try {
             startActivity(Intent.createChooser(intent, "Share Via"));
-        }
-        catch (ActivityNotFoundException e){
+        } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "No sharing app found", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data){
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-            //Ensures image can't be saved/shared until text has been added
-            imageLoaded = true;
-            go.setEnabled(true);
-            go.setText("TRY");
-            if (textAdded) {
-                share.setEnabled(true);
-                save.setEnabled(true);
-                share.setEnabled(true);
+            Cursor cursor = null;
+            if (selectedImage != null) {
+                cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
             }
+            if (cursor != null) {
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+                ivMemePreview.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+                //Ensures image can't be saved/shared until text has been added
+                imageLoaded = true;
+                btnGo.setEnabled(true);
+                btnGo.setText("TRY");
+                if (textAdded) {
+                    btnShare.setEnabled(true);
+                    btnSave.setEnabled(true);
+                    btnShare.setEnabled(true);
+                }
+            }
+
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case MY_PERMISSION_REQUEST: {
-                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(MainActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-                        //do nothing
-                    }
-                }
-                else{
-                    Toast.makeText(this, "No Permisssion Granted!", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
+        if (requestCode == MY_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);//do nothing
+            } else {
+                Toast.makeText(this, "No Permisssion Granted!", Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
     }
