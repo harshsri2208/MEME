@@ -6,7 +6,7 @@
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:id="@+id/tlay"
+        android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -17,75 +17,83 @@
             android:id="@+id/editText1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Top Text"
-            android:inputType="text" />
+            android:hint="@string/top_text"
+            android:inputType="text"
+            android:importantForAutofill="no" />
 
         <EditText
             android:id="@+id/editText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Bottom Text"
-            android:inputType="text" />
+            android:hint="@string/bottom_text"
+            android:inputType="text"
+            android:importantForAutofill="no" />
 
         <Button
             android:id="@+id/btnClear"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clear" />
+            android:text="@string/btn_clear" />
 
         <Button
             android:id="@+id/go"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TRY" />
+            android:text="@string/btn_try" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/blay"
+        android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:weightSum="3"
-        android:layout_height="wrap_content">
+        android:orientation="horizontal"
+        android:weightSum="3">
 
         <Button
             android:id="@+id/load"
-            android:layout_weight="1"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
-            android:text="LOAD"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_load" />
 
         <Button
             android:id="@+id/save"
-            android:layout_weight="1"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
-            android:text="SAVE"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_save" />
 
         <Button
             android:id="@+id/share"
-            android:layout_weight="1"
+            style="?android:buttonBarButtonStyle"
             android:layout_width="match_parent"
-            android:text="SHARE"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_share" />
 
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/lay"
+        android:id="@+id/meme_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/blay"
-        android:layout_below="@+id/tlay"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_below="@+id/top_layout"
         android:layout_centerInParent="true">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:layout_height="match_parent" />
+            android:contentDescription="@string/meme_pic" />
 
         <TextView
             android:id="@+id/textView1"
@@ -95,7 +103,7 @@
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:textColor="#ffffff"
-            android:textSize="40dp" />
+            android:textSize="40sp" />
 
         <TextView
             android:id="@+id/textView2"
@@ -105,10 +113,8 @@
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:textColor="#ffffff"
-            android:textSize="40dp" />
+            android:textSize="40sp" />
 
-
-        </RelativeLayout>
-
+    </RelativeLayout>
 
 </RelativeLayout>
