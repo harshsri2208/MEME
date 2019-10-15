@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">MEME</string>
+    <string name="load_image_first_msg">Upload an image first</string>
+    <string name="meme_pic">meme pic</string>
+    <string name="top_text">Top Text</string>
+    <string name="bottom_text">Bottom Text</string>
+    <string name="btn_clear">Clear</string>
+    <string name="btn_try">TRY</string>
+    <string name="btn_load">LOAD</string>
+    <string name="btn_save">SAVE</string>
+    <string name="btn_share">SHARE</string>
 </resources>
