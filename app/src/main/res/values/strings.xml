@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MEME</string>
+    <string name="add_text_to_images_using_meme">Add text to images using MEME</string>
+    <string name="text_continue">CONTINUE</string>
+    <string name="load">LOAD</string>
+    <string name="share">SHARE</string>
+    <string name="save">SAVE</string>
+    <string name="enter_text_here">Enter text here</string>
 </resources>
