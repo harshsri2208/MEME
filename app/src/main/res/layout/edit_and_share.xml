@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBlackVariant">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/curved_rectangle"
+        app:layout_constraintBottom_toTopOf="@+id/btn_share"
+        app:layout_constraintEnd_toEndOf="@+id/btn_share"
+        app:layout_constraintStart_toStartOf="@+id/btn_save"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+        <EditText
+            android:id="@+id/upper_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBlack"
+            android:minHeight="60dp"
+            style="@style/TextAppearance.EditText"
+            android:maxLines="2"
+            android:lines="2"
+            android:inputType="textShortMessage"
+            android:hint="@string/enter_text_here"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textColorHint="@color/colorAshWhite"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toStartOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingLeft="12dp" />
+
+        <EditText
+            android:id="@+id/lower_edit_text"
+            style="@style/TextAppearance.EditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBlack"
+            android:hint="@string/enter_text_here"
+            android:maxEms="20"
+            android:lines="2"
+            android:inputType="textShortMessage"
+            android:minHeight="60dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:textColorHint="@color/colorAshWhite"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/imageView" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+    <Button
+        android:id="@+id/btn_save"
+        style="@style/TextAppearance.TextWhite"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/curved_blue_rectangle"
+        android:text="@string/save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_share"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_share"
+        style="@style/TextAppearance.TextWhite"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/curved_gray_rectangle"
+        android:text="@string/share"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_save" />
+
+</android.support.constraint.ConstraintLayout>
